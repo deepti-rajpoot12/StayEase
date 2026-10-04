@@ -7,11 +7,27 @@ module.exports.isLoggedIn = (req, res, next ) =>{
     if(!req.isAuthenticated()){
             console.log(req.originalUrl);
             req.session.redirectUrl = req.originalUrl;
-            req.flash("error", "you must be logged in to create listings!");
+            req.flash("error", "Please log in to continue.");
             return res.redirect("/login");
         }
         next();
 
+};
+
+module.exports.isAdmin = (req, res, next) => {
+    if (!req.isAuthenticated() || req.user.role !== "admin") {
+        req.flash("error", "Administrator access is required.");
+        return res.redirect(req.isAuthenticated() ? "/listings" : "/admin/login");
+    }
+    next();
+};
+
+module.exports.isRegularUser = (req, res, next) => {
+    if (!req.isAuthenticated() || req.user.role !== "user") {
+        req.flash("error", "Please sign in with a guest account to do that.");
+        return res.redirect(req.isAuthenticated() ? "/listings" : "/login");
+    }
+    next();
 };
 
 module.exports.saveRedirectUrl = (req, res, next) =>{

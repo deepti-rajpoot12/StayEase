@@ -2,15 +2,15 @@ const express = require("express");
 const router = express.Router();
 
 const bookingController = require("../controllers/booking");
-const { isLoggedIn } = require("../middleware");
+const { isRegularUser } = require("../middleware");
 
-router.get("/", isLoggedIn, bookingController.index);
+router.get("/", isRegularUser, bookingController.index);
 
-router.get("/:id/new", isLoggedIn, bookingController.renderBookingForm);
+router.get("/:id/new", isRegularUser, bookingController.renderBookingForm);
 
-router.post("/:id/create-order", isLoggedIn, bookingController.createPaymentOrder);
+router.post("/:id/create-order", isRegularUser, bookingController.createPaymentOrder);
 
-router.post("/:id/verify-payment", isLoggedIn, bookingController.verifyPayment);
-router.post("/:id/payment-failed", isLoggedIn, bookingController.markPaymentFailed);
+router.post("/:id/verify-payment", isRegularUser, bookingController.verifyPayment);
+router.post("/:id/payment-failed", isRegularUser, bookingController.markPaymentFailed);
 
 module.exports = router;

@@ -27,14 +27,14 @@
           <div class="listing-owner-icon"><i class="fa-solid fa-house"></i></div>
           <div>
             <span>Hosted by</span>
-            <strong><%= listing.owner.username %></strong>
+            <strong><%= listing.owner.role === "admin" ? "StayEase" : listing.owner.username %></strong>
           </div>
           <strong class="listing-price">₹<%= listing.price.toLocaleString("en-IN") %><small> / night</small></strong>
         </div>
         <p class="listing-description"><%= listing.description %></p>
       </section>
 
-      <% if(currUser && listing.owner._id.equals(currUser._id)) { %>
+      <% if(isAdmin) { %>
         <div class="listing-owner-actions">
           <span>You own this listing</span>
           <div>
@@ -55,7 +55,7 @@
           <span class="review-count"><%= listing.reviews.length %> review<%= listing.reviews.length === 1 ? "" : "s" %></span>
         </div>
 
-        <% if(currUser) { %>
+        <% if(currUser && !isAdmin) { %>
           <div class="review-form-card">
             <h3>Leave a review</h3>
             <form action="/listings/<%= listing.id %>/reviews" method="post" novalidate class="needs-validation">
@@ -84,7 +84,7 @@
               <button class="btn btn-danger">Submit review</button>
             </form>
           </div>
-        <% } else { %>
+        <% } else if (!currUser) { %>
           <p class="review-login-note"><a href="/login">Log in</a> to leave a review.</p>
         <% } %>
 
@@ -100,7 +100,7 @@
                   </div>
                 </div>
                 <p class="review-comment"><%= review.comment %></p>
-                <% if(currUser && review.author._id.equals(currUser._id)) { %>
+                <% if(currUser && !isAdmin && review.author._id.equals(currUser._id)) { %>
                   <form method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
                     <button class="review-delete-btn">Delete review</button>
                   </form>
@@ -121,7 +121,11 @@
           <h2>Reserve this stay</h2>
           <p class="reserve-price">₹<%= listing.price.toLocaleString("en-IN") %> <span>/ night</span></p>
           <p class="reserve-copy">Choose your dates, then pay securely with Razorpay.</p>
-          <a href="/bookings/<%= listing._id %>/new" class="btn btn-danger w-100 reserve-btn">Reserve now</a>
+          <% if (!isAdmin) { %>
+            <a href="/bookings/<%= listing._id %>/new" class="btn btn-danger w-100 reserve-btn">Reserve now</a>
+          <% } else { %>
+            <a href="/admin/dashboard" class="btn btn-outline-dark w-100 reserve-btn">Back to listing management</a>
+          <% } %>
         </section>
 
         <section class="map-card">

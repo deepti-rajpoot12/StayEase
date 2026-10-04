@@ -1,0 +1,70 @@
+<% layout("/layouts/boilerplate") %>
+
+<main class="portal-page">
+  <section class="portal-hero">
+    <div class="portal-hero-copy">
+      <p class="portal-eyebrow"><i class="fa-solid fa-compass"></i> Welcome to StayEase</p>
+      <h1>Find a place<br>that feels like <span>yours.</span></h1>
+      <p class="portal-intro">Discover memorable stays, book with confidence, and keep every trip in one place.</p>
+      <a class="btn portal-explore-btn" href="/listings">Explore stays <i class="fa-solid fa-arrow-right ms-2"></i></a>
+      <div class="portal-trust-row">
+        <span><i class="fa-solid fa-shield-halved"></i> Secure booking</span>
+        <span><i class="fa-solid fa-star"></i> Guest reviews</span>
+      </div>
+    </div>
+    <div class="portal-hero-art" aria-hidden="true">
+      <div class="portal-sun"></div>
+      <div class="portal-art-card portal-art-card-back"><i class="fa-solid fa-mountain-sun"></i></div>
+      <div class="portal-art-card portal-art-card-front">
+        <div class="portal-window"><span></span><span></span><span></span></div>
+        <div class="portal-house-roof"></div>
+        <div class="portal-house"><i class="fa-solid fa-door-closed"></i></div>
+        <div class="portal-art-caption"><i class="fa-solid fa-location-dot"></i> Your next escape awaits</div>
+      </div>
+      <div class="portal-art-sparkle"><i class="fa-solid fa-sparkles"></i></div>
+    </div>
+  </section>
+
+  <section class="portal-access-section" aria-labelledby="portal-access-title">
+    <div class="portal-section-heading">
+      <div>
+        <p class="portal-eyebrow">Choose your account</p>
+        <h2 id="portal-access-title">How would you like to continue?</h2>
+      </div>
+      <p>Sign in to pick up where you left off, or create an account to get started.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-12 col-lg-6">
+        <article class="portal-role-card portal-guest-card h-100">
+          <div class="portal-role-icon"><i class="fa-solid fa-suitcase-rolling"></i></div>
+          <div class="portal-role-content">
+            <p class="portal-role-label">For travelers</p>
+            <h3>Guest account</h3>
+            <p>Browse stays, reserve your dates, manage your bookings, and share a review after your trip.</p>
+            <div class="portal-role-actions">
+              <a class="btn portal-primary-btn" href="/login">Guest log in</a>
+              <a class="btn portal-secondary-btn" href="/signup">Create guest account</a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="col-12 col-lg-6">
+        <article class="portal-role-card portal-admin-card h-100">
+          <div class="portal-role-icon"><i class="fa-solid fa-user-shield"></i></div>
+          <div class="portal-role-content">
+            <p class="portal-role-label">For StayEase staff</p>
+            <h3>Administrator</h3>
+            <p>Access the listing dashboard to add, update, and remove properties across the platform.</p>
+            <div class="portal-role-actions">
+              <a class="btn portal-primary-btn" href="/admin/login">Admin log in</a>
+              <a class="btn portal-secondary-btn" href="/admin/signup">Create admin account</a>
+            </div>
+            <small><i class="fa-solid fa-lock"></i> Admin registration requires a private invitation key.</small>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+</main>

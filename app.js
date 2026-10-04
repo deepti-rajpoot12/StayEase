@@ -21,6 +21,7 @@ const listingsRouter = require("./routes/listing.js");
 const reviewsRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const bookingRouter = require("./routes/booking");
+const adminRouter = require("./routes/admin.js");
 
 const dbURL = process.env.ATLASDB_URL;
 
@@ -88,10 +89,16 @@ app.use((req, res, next )=>{
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     res.locals.currUser = req.user || null;
+    res.locals.isAdmin = req.user?.role === "admin";
     next();
 })
 
+app.get("/", (req, res) => {
+    res.render("home.ejs");
+});
+
 app.use("/listings", listingsRouter);
+app.use("/admin", adminRouter);
 app.use("/listings/:id/reviews", reviewsRouter);
 app.use("/", userRouter);
 app.use("/bookings", bookingRouter);

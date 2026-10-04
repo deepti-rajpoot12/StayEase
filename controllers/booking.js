@@ -31,6 +31,22 @@ const getBookingDetails = (body) => {
   return { checkIn, checkOut, guests, nights };
 };
 
+// Treat pending payment sessions as holds too, so two guests cannot start
+// checkout for overlapping dates at the same time. Failed/cancelled bookings
+// release their dates.
+const findDateConflict = (listingId, checkIn, checkOut, excludeBookingId) => {
+  const query = {
+    listing: listingId,
+    checkIn: { $lt: checkOut },
+    checkOut: { $gt: checkIn },
+    bookingStatus: { $ne: "Cancelled" },
+    paymentStatus: { $ne: "Failed" },
+  };
+
+  if (excludeBookingId) query._id = { $ne: excludeBookingId };
+  return Booking.findOne(query).select("_id checkIn checkOut");
+};
+
 module.exports.index = async (req, res) => {
     const bookings = await Booking.find({
         user: req.user._id
@@ -65,6 +81,26 @@ module.exports.createPaymentOrder = async (req, res) => {
   }
 
   const { checkIn, checkOut, guests, nights } = details;
+
+  let booking = await Booking.findOne({
+    listing: listing._id,
+    user: req.user._id,
+    checkIn,
+    checkOut,
+  });
+
+  const conflictingBooking = await findDateConflict(
+    listing._id,
+    checkIn,
+    checkOut,
+    booking?._id
+  );
+  if (conflictingBooking) {
+    return res.status(409).json({
+      message: "These dates overlap with another reservation. Please choose different dates.",
+    });
+  }
+
   const totalPrice = listing.price * nights;
 
   if (!Number.isFinite(totalPrice) || totalPrice <= 0) {
@@ -76,13 +112,6 @@ module.exports.createPaymentOrder = async (req, res) => {
   }
 
   try {
-    let booking = await Booking.findOne({
-      listing: listing._id,
-      user: req.user._id,
-      checkIn,
-      checkOut,
-    });
-
     if (booking && booking.paymentStatus === "Paid") {
       return res.status(409).json({ message: "This booking has already been paid for." });
     }
@@ -157,6 +186,20 @@ module.exports.verifyPayment = async (req, res) => {
 
   if (!booking || booking.razorpayOrderId !== razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
     return res.status(400).json({ message: "Invalid payment request." });
+  }
+
+  const conflictingBooking = await findDateConflict(
+    booking.listing,
+    booking.checkIn,
+    booking.checkOut,
+    booking._id
+  );
+  if (conflictingBooking) {
+    booking.paymentStatus = "Failed";
+    await booking.save();
+    return res.status(409).json({
+      message: "These dates have just been booked by someone else. Your reservation was not confirmed.",
+    });
   }
 
   const expectedSignature = crypto
